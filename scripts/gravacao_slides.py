@@ -15,7 +15,6 @@ def write_data_in_json_file(data_from_files_pptx: List[dict]):
 
             json.dump(data_pptx, f, ensure_ascii=False, indent=4)
 
-
 #write_data_in_json_file(get_data_from_files_pptx(PATH_TESTE_SLIDE))
 
 
