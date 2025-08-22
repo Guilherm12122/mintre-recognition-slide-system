@@ -52,4 +52,4 @@ def match_voice_json(phrase: str):
     if max_dict_correlation['correlation'] > 0:
         return max_dict_correlation['path']
     else:
-        raise Exception('O valor de entrada não corresponde a nenhum slide disponível')
+        raise Exception('O valor de entrada não corresponde a nenhum slide disponível...Tente atualizar o repertório !')

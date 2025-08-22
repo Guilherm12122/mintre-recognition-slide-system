@@ -2,14 +2,14 @@
 
 import speech_recognition as sr
 
-from CONSTANTES import TIME_LISTENING
+from CONSTANTES import TIME_LISTENING, DEVICE_INDEX
 
 
 def get_string_from_audio():
 
     recognizer = sr.Recognizer()
 
-    with sr.Microphone() as source:
+    with sr.Microphone(device_index=DEVICE_INDEX) as source:
 
         audio = recognizer.listen(source, timeout=3, phrase_time_limit=TIME_LISTENING)
 
