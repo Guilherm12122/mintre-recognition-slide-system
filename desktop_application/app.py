@@ -25,8 +25,7 @@ def get_slide_from_phrase(phrase, var_notification):
         path = match_voice_json(phrase)
         open_file(path)
     except Exception as e:
-        print(f'ERRO: {e}')
-    time.sleep(5)
+        messagebox.showerror('ERRO', f'{e}')
 
     if var_notification is not None:
         var_notification.destroy()
@@ -39,7 +38,7 @@ def search_from_audio(var_notification):
         phrase = get_string_from_audio()
         create_thread_search(phrase)
     except Exception as e:
-        print(f'ERRO: {e}')
+        messagebox.showerror('ERRO', f'{e}')
 
     var_notification.destroy()
 

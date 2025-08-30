@@ -17,10 +17,10 @@ def get_string_from_audio():
             string_audio = recognizer.recognize_google(audio, language="pt-BR")
             return string_audio
         except sr.UnknownValueError:
-            print("Não entendi o que você falou")
+            raise Exception("Não entendi o que você falou")
         except sr.RequestError:
-            print("Erro ao se conectar ao serviço de reconhecimento")
+            raise Exception("Erro ao se conectar ao serviço de reconhecimento")
         except sr.WaitTimeoutError:
-            print("Nada foi dito !")
+            raise Exception("Nada foi dito !")
         except Exception as e:
-            print("Erro:", e)
+            raise Exception("Erro:", e)
