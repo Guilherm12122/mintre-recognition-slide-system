@@ -1,5 +1,8 @@
 import tkinter as tk
-
+from tkinter import ttk
+import time
+from tkinter import messagebox
+from threading import Thread
 from CONSTANTES import PATH_TESTE_SLIDE
 from scripts.correlacionador import match_voice_json
 from scripts.gravacao_slides import write_data_in_json_file
@@ -16,20 +19,71 @@ def init_win(title, area):
 
     return win
 
-
-def get_slide_from_phrase(phrase):
-
-    path = match_voice_json(phrase)
-    open_file(path)
-
-
-def get_slide_from_audio():
+def get_slide_from_phrase(phrase, var_notification):
 
     try:
-        get_slide_from_phrase(get_string_from_audio())
+        path = match_voice_json(phrase)
+        open_file(path)
+    except Exception as e:
+        print(f'ERRO: {e}')
+    time.sleep(5)
+
+    if var_notification is not None:
+        var_notification.destroy()
+
+def search_from_audio(var_notification):
+
+    phrase = ''
+
+    try:
+        phrase = get_string_from_audio()
+        create_thread_search(phrase)
     except Exception as e:
         print(f'ERRO: {e}')
 
+    var_notification.destroy()
+
+    return phrase
+
+def notification_alert(alert_msg, main_window):
+    main_window.after(0, lambda: messagebox.showinfo('Notificação', alert_msg))
+
+def get_slide_from_audio(main_window):
+
+    notif = create_win_notification(main_window, 'Escutando')
+    create_thread_get_phrase_from_audio(notif)
+
+
+def create_thread_get_phrase_from_audio(notif):
+
+    thread_search = Thread(target=search_from_audio, args=(notif,))
+    thread_search.start()
+
+
+def execute_threads(phrase, alert_msg, main_window):
+
+    # Cria janela box de notificação
+    notif = create_win_notification(main_window, alert_msg)
+
+    # Cria thread de busca
+    create_thread_search(phrase, notif)
+
+
+def create_thread_search(phrase, notif = None):
+    thread_search = Thread(target=get_slide_from_phrase, args=(phrase, notif))
+    thread_search.start()
+
+
+def create_win_notification(main_window, alert_msg):
+
+    notif = tk.Toplevel(main_window)
+    notif.title(f"Processando...")
+    notif.geometry("250x100")
+    ttk.Label(notif, text=f"{alert_msg}...").pack(expand=True, pady=20)
+    notif.transient(main_window)  # fica em cima da principal
+    notif.grab_set()
+
+    return notif
 
 
 def app():
@@ -42,11 +96,11 @@ def app():
     phrase_input.pack(padx=30, pady=30)
 
     # Adicionar botão de buscar música por frase
-    button = tk.Button(win, text='Buscar música', command= lambda : get_slide_from_phrase(phrase_input.get()))
+    button = tk.Button(win, text='Buscar música', command= lambda : execute_threads(phrase_input.get(), 'Procurando', win))
     button.pack()
 
     # Adicionar botão de buscar música por aúdio
-    button_buscar_por_audio = tk.Button(win, text='Buscar música por aúdio', command=get_slide_from_audio)
+    button_buscar_por_audio = tk.Button(win, text='Buscar música por aúdio', command= lambda : get_slide_from_audio(win))
     button_buscar_por_audio.pack()
 
     # Adicionar botão de atualizar repertório
