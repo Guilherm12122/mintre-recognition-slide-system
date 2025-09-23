@@ -6,9 +6,6 @@ from typing import List
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from CONSTANTES import PATH_READ_DATA_JSON
-
-
 def extract_dict_from_json_file(file_json_path: str):
 
     return json.load(open(file_json_path))
@@ -33,9 +30,9 @@ def return_max_correlation(phrase: str, list_strs: List[str]):
     return max(list_correlation)
 
 
-def match_voice_json(phrase: str):
+def match_voice_json(phrase: str, write_json_path: str):
 
-    data_slide = get_dicts_from_json_files(PATH_READ_DATA_JSON)
+    data_slide = get_dicts_from_json_files(f'{write_json_path}/*.json')
 
     list_dict_slides_correlation = []
 

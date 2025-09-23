@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
-import time
+import os
+from dotenv import load_dotenv
 from tkinter import messagebox
 from threading import Thread
-from CONSTANTES import PATH_TESTE_SLIDE
 from scripts.correlacionador import match_voice_json
 from scripts.gravacao_slides import write_data_in_json_file
 from scripts.leitor_slide import get_data_from_files_pptx
@@ -22,7 +22,7 @@ def init_win(title, area):
 def get_slide_from_phrase(phrase, var_notification):
 
     try:
-        path = match_voice_json(phrase)
+        path = match_voice_json(phrase, os.getenv('PATH_TESTE_WRITE_JSON'))
         open_file(path)
     except Exception as e:
         messagebox.showerror('ERRO', f'{e}')
@@ -104,9 +104,13 @@ def app():
 
     # Adicionar botão de atualizar repertório
     button_update_repertorio = tk.Button(win, text='Atualizar repertório', command= lambda : write_data_in_json_file(
-                                                get_data_from_files_pptx(PATH_TESTE_SLIDE)))
+                                                get_data_from_files_pptx(
+                                                    os.getenv('PATH_TESTE_SLIDE')),
+                                                    os.getenv('PATH_TESTE_WRITE_JSON')
+                                                ))
     button_update_repertorio.pack()
 
     win.mainloop()
 
+load_dotenv()
 app()
