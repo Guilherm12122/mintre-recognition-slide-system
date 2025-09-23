@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 from tkinter import messagebox
 from threading import Thread
 from scripts.correlacionador import match_voice_json
@@ -43,6 +43,44 @@ def search_from_audio(var_notification):
     var_notification.destroy()
 
     return phrase
+
+def config_param_envs(main_window):
+
+    config_win = tk.Toplevel(main_window)
+    config_win.title('Configuração')
+    config_win.geometry("500x500")
+
+    ttk.Label(config_win, text="Caminho do repertório:").pack(expand=True)
+    repertorio_path = tk.Entry(config_win, width=100)
+    repertorio_path.pack()
+
+    ttk.Label(config_win, text="Caminho de escrita dos dados:").pack(expand=True)
+    escrita_path = tk.Entry(config_win, width=100)
+    escrita_path.pack()
+
+    button_save_envs = tk.Button(config_win,
+                                 text='Salvar alterações',
+                                 command= lambda : modify_env_args(
+                                     repertorio_path.get(),
+                                     escrita_path.get(),
+                                     config_win
+                                 ))
+    button_save_envs.pack()
+
+    button_cancel_envs = tk.Button(config_win,
+                                   text='Descartar alterações',
+                                   command=config_win.destroy)
+    button_cancel_envs.pack()
+
+def modify_env_args(repertorio_path: str,
+                    escrita_path: str,
+                    top_level_win):
+
+    set_key(".env", "PATH_TESTE_SLIDE", repertorio_path)
+    set_key(".env", "PATH_TESTE_WRITE_JSON", escrita_path)
+    load_dotenv(override=True)
+    messagebox.showinfo('Aviso', 'As alterações foram salvas.',
+                        parent=top_level_win)
 
 def notification_alert(alert_msg, main_window):
     main_window.after(0, lambda: messagebox.showinfo('Notificação', alert_msg))
@@ -106,9 +144,16 @@ def app():
     button_update_repertorio = tk.Button(win, text='Atualizar repertório', command= lambda : write_data_in_json_file(
                                                 get_data_from_files_pptx(
                                                     os.getenv('PATH_TESTE_SLIDE')),
-                                                    os.getenv('PATH_TESTE_WRITE_JSON')
-                                                ))
+                                                    os.getenv('PATH_TESTE_WRITE_JSON')))
     button_update_repertorio.pack()
+
+    # Adicionar botão de configurar as variáveis de ambiente
+    buttom_update_envs = tk.Button(
+        win, text='Definir diretório de leitura e escrita dos dados',
+        command= lambda : config_param_envs(win)
+    )
+
+    buttom_update_envs.pack()
 
     win.mainloop()
 
