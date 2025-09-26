@@ -22,6 +22,10 @@ def init_win(title, area):
 def get_slide_from_phrase(phrase, var_notification):
 
     try:
+
+        if phrase == '':
+            raise Exception('Deve-se informar um valor de entrada')
+
         path = match_voice_json(phrase, os.getenv('PATH_TESTE_WRITE_JSON'))
         open_file(path)
     except Exception as e:
@@ -76,11 +80,22 @@ def modify_env_args(repertorio_path: str,
                     escrita_path: str,
                     top_level_win):
 
-    set_key(".env", "PATH_TESTE_SLIDE", repertorio_path)
-    set_key(".env", "PATH_TESTE_WRITE_JSON", escrita_path)
-    load_dotenv(override=True)
-    messagebox.showinfo('Aviso', 'As alterações foram salvas.',
-                        parent=top_level_win)
+    try:
+        if not ((repertorio_path != '') or (escrita_path != '')):
+            raise Exception('Deve-se preencher ao menos um desses campos.')
+
+        if repertorio_path != '':
+            set_key("../.env", "PATH_TESTE_SLIDE", repertorio_path)
+
+        if escrita_path != '':
+            set_key("../.env", "PATH_TESTE_WRITE_JSON", escrita_path)
+
+        load_dotenv(override=True)
+        messagebox.showinfo('Aviso', 'As alterações foram salvas.',
+                            parent=top_level_win)
+
+    except Exception as e:
+        messagebox.showerror('ERRO', f'{e}', parent=top_level_win)
 
 def notification_alert(alert_msg, main_window):
     main_window.after(0, lambda: messagebox.showinfo('Notificação', alert_msg))
