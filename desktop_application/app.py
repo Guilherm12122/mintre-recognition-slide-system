@@ -26,7 +26,7 @@ def get_slide_from_phrase(phrase, var_notification):
         if phrase == '':
             raise Exception('Deve-se informar um valor de entrada')
 
-        path = match_voice_json(phrase, os.getenv('PATH_TESTE_WRITE_JSON'))
+        path = match_voice_json(phrase, os.getenv('ESCRITA_DADOS'))
         open_file(path)
     except Exception as e:
         messagebox.showerror('ERRO', f'{e}')
@@ -85,10 +85,10 @@ def modify_env_args(repertorio_path: str,
             raise Exception('Deve-se preencher ao menos um desses campos.')
 
         if repertorio_path != '':
-            set_key("../.env", "PATH_TESTE_SLIDE", repertorio_path)
+            set_key("../.env", "CAMINHO_REPERTORIO", repertorio_path)
 
         if escrita_path != '':
-            set_key("../.env", "PATH_TESTE_WRITE_JSON", escrita_path)
+            set_key("../.env", "ESCRITA_DADOS", escrita_path)
 
         load_dotenv(override=True)
         messagebox.showinfo('Aviso', 'As alterações foram salvas.',
@@ -140,8 +140,8 @@ def create_win_notification(main_window, alert_msg):
 def write_data_repertorio(win_notif):
     write_data_in_json_file(
         get_data_from_files_pptx(
-            os.getenv('PATH_TESTE_SLIDE')),
-            os.getenv('PATH_TESTE_WRITE_JSON'))
+            os.getenv('CAMINHO_REPERTORIO')),
+            os.getenv('ESCRITA_DADOS'))
     win_notif.destroy()
 
 
@@ -149,8 +149,8 @@ def update_repertorio(main_window):
 
     write_data_in_json_file(
         get_data_from_files_pptx(
-            os.getenv('PATH_TESTE_SLIDE')),
-            os.getenv('PATH_TESTE_WRITE_JSON'))
+            os.getenv('CAMINHO_REPERTORIO')),
+            os.getenv('ESCRITA_DADOS'))
 
     messagebox.showinfo('Aviso', 'Repertório atualizado',
                         parent=main_window)
