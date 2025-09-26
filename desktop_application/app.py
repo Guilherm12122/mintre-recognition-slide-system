@@ -137,6 +137,23 @@ def create_win_notification(main_window, alert_msg):
 
     return notif
 
+def write_data_repertorio(win_notif):
+    write_data_in_json_file(
+        get_data_from_files_pptx(
+            os.getenv('PATH_TESTE_SLIDE')),
+            os.getenv('PATH_TESTE_WRITE_JSON'))
+    win_notif.destroy()
+
+
+def update_repertorio(main_window):
+
+    write_data_in_json_file(
+        get_data_from_files_pptx(
+            os.getenv('PATH_TESTE_SLIDE')),
+            os.getenv('PATH_TESTE_WRITE_JSON'))
+
+    messagebox.showinfo('Aviso', 'Repertório atualizado',
+                        parent=main_window)
 
 def app():
 
@@ -156,10 +173,8 @@ def app():
     button_buscar_por_audio.pack()
 
     # Adicionar botão de atualizar repertório
-    button_update_repertorio = tk.Button(win, text='Atualizar repertório', command= lambda : write_data_in_json_file(
-                                                get_data_from_files_pptx(
-                                                    os.getenv('PATH_TESTE_SLIDE')),
-                                                    os.getenv('PATH_TESTE_WRITE_JSON')))
+    button_update_repertorio = tk.Button(win, text='Atualizar repertório', command= lambda :
+                                         update_repertorio(win))
     button_update_repertorio.pack()
 
     # Adicionar botão de configurar as variáveis de ambiente
