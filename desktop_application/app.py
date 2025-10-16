@@ -19,6 +19,13 @@ def init_win(title, area):
 
     return win
 
+def set_env_path(env_name, value):
+
+    if os.path.exists(value):
+        set_key("../.env", env_name, value)
+    else:
+        raise Exception(f'O caminho informado para {env_name} é inválido')
+
 def get_slide_from_phrase(phrase, var_notification):
 
     try:
@@ -105,10 +112,10 @@ def modify_env_args(repertorio_path: str,
             raise Exception('Deve-se preencher ao menos um desses campos.')
 
         if repertorio_path != '':
-            set_key("../.env", "CAMINHO_REPERTORIO", repertorio_path + '/*.pptx')
+            set_env_path("CAMINHO_REPERTORIO", repertorio_path)
 
         if escrita_path != '':
-            set_key("../.env", "ESCRITA_DADOS", escrita_path)
+            set_env_path("ESCRITA_DADOS", escrita_path)
 
         load_dotenv(override=True)
         messagebox.showinfo('Aviso', 'As alterações foram salvas.',
@@ -159,23 +166,18 @@ def create_win_notification(main_window, alert_msg):
 
     return notif
 
-def write_data_repertorio(win_notif):
-    write_data_in_json_file(
-        get_data_from_files_pptx(
-            os.getenv('CAMINHO_REPERTORIO')),
-            os.getenv('ESCRITA_DADOS'))
-    win_notif.destroy()
-
-
 def update_repertorio(main_window):
 
-    write_data_in_json_file(
-        get_data_from_files_pptx(
-            os.getenv('CAMINHO_REPERTORIO')),
-            os.getenv('ESCRITA_DADOS'))
+    try:
+        write_data_in_json_file(
+            get_data_from_files_pptx(
+                os.getenv('CAMINHO_REPERTORIO')),
+                os.getenv('ESCRITA_DADOS'))
 
-    messagebox.showinfo('Aviso', 'Repertório atualizado',
-                        parent=main_window)
+        messagebox.showinfo('Aviso', 'Repertório atualizado',
+                            parent=main_window)
+    except Exception as e:
+        messagebox.showerror('ERRO', f'{e}', parent=main_window)
 
 def app():
 
