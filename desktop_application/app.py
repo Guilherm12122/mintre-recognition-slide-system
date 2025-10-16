@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import os
 from dotenv import load_dotenv, set_key
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from threading import Thread
 from scripts.correlacionador import match_voice_json
 from scripts.gravacao_slides import write_data_in_json_file
@@ -18,6 +18,13 @@ def init_win(title, area):
     win.geometry(area)
 
     return win
+
+def set_env_path(env_name, value):
+
+    if os.path.exists(value):
+        set_key("../.env", env_name, value)
+    else:
+        raise Exception(f'O caminho informado para {env_name} é inválido')
 
 def get_slide_from_phrase(phrase, var_notification):
 
@@ -48,6 +55,17 @@ def search_from_audio(var_notification):
 
     return phrase
 
+
+def search_path_explore_files(input):
+
+    path_selected = filedialog.askdirectory(title='Seleciona uma pasta.')
+
+    if path_selected:
+
+        input.delete(0, tk.END)
+        input.insert(0, path_selected)
+
+
 def config_param_envs(main_window):
 
     config_win = tk.Toplevel(main_window)
@@ -58,17 +76,26 @@ def config_param_envs(main_window):
     repertorio_path = tk.Entry(config_win, width=100)
     repertorio_path.pack()
 
+    bt_select_path_repertorio = tk.Button(config_win, text='Selecionar pasta para buscar músicas.',
+                                          command= lambda : search_path_explore_files(repertorio_path))
+    bt_select_path_repertorio.pack()
+
     ttk.Label(config_win, text="Caminho de escrita dos dados:").pack(expand=True)
     escrita_path = tk.Entry(config_win, width=100)
     escrita_path.pack()
+
+    bt_select_path_escrita = tk.Button(config_win, text='Selecionar pasta para escrever dados das músicas.',
+                                       command= lambda : search_path_explore_files(escrita_path))
+    bt_select_path_escrita.pack()
+
 
     button_save_envs = tk.Button(config_win,
                                  text='Salvar alterações',
                                  command= lambda : modify_env_args(
                                      repertorio_path.get(),
                                      escrita_path.get(),
-                                     config_win
-                                 ))
+                                     config_win))
+
     button_save_envs.pack()
 
     button_cancel_envs = tk.Button(config_win,
@@ -85,14 +112,16 @@ def modify_env_args(repertorio_path: str,
             raise Exception('Deve-se preencher ao menos um desses campos.')
 
         if repertorio_path != '':
-            set_key("../.env", "CAMINHO_REPERTORIO", repertorio_path)
+            set_env_path("CAMINHO_REPERTORIO", repertorio_path)
 
         if escrita_path != '':
-            set_key("../.env", "ESCRITA_DADOS", escrita_path)
+            set_env_path("ESCRITA_DADOS", escrita_path)
 
         load_dotenv(override=True)
         messagebox.showinfo('Aviso', 'As alterações foram salvas.',
                             parent=top_level_win)
+
+        top_level_win.destroy()
 
     except Exception as e:
         messagebox.showerror('ERRO', f'{e}', parent=top_level_win)
@@ -137,23 +166,18 @@ def create_win_notification(main_window, alert_msg):
 
     return notif
 
-def write_data_repertorio(win_notif):
-    write_data_in_json_file(
-        get_data_from_files_pptx(
-            os.getenv('CAMINHO_REPERTORIO')),
-            os.getenv('ESCRITA_DADOS'))
-    win_notif.destroy()
-
-
 def update_repertorio(main_window):
 
-    write_data_in_json_file(
-        get_data_from_files_pptx(
-            os.getenv('CAMINHO_REPERTORIO')),
-            os.getenv('ESCRITA_DADOS'))
+    try:
+        write_data_in_json_file(
+            get_data_from_files_pptx(
+                os.getenv('CAMINHO_REPERTORIO')),
+                os.getenv('ESCRITA_DADOS'))
 
-    messagebox.showinfo('Aviso', 'Repertório atualizado',
-                        parent=main_window)
+        messagebox.showinfo('Aviso', 'Repertório atualizado',
+                            parent=main_window)
+    except Exception as e:
+        messagebox.showerror('ERRO', f'{e}', parent=main_window)
 
 def app():
 

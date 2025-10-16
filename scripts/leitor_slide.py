@@ -1,5 +1,6 @@
 from pptx import Presentation
 import glob
+import os
 
 def extract_data_from_presentation_slide(slide_path: str):
     
@@ -27,7 +28,14 @@ def extract_data_from_presentation_slide(slide_path: str):
 # Obtêm o caminho de todos os slides de uma pasta.
 def get_data_from_files_pptx(general_path: str):
 
-    return [extract_data_from_presentation_slide(file_path) for file_path in glob.glob(general_path, recursive=True)]
+    print(general_path)
+    print(os.path.exists(general_path))
+
+    if os.path.exists(general_path):
+        return [extract_data_from_presentation_slide(file_path)
+                for file_path in glob.glob(general_path + '/*.pptx', recursive=True)]
+    else:
+        raise Exception('O caminho de repertório informado é inválido')
 
 
 
